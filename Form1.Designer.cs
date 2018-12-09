@@ -42,17 +42,17 @@
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.btn_Search = new System.Windows.Forms.Button();
-            this.btn_Connect = new System.Windows.Forms.Button();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.txt_search = new System.Windows.Forms.TextBox();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.txt_search = new System.Windows.Forms.TextBox();
+            this.btn_cnt_file = new System.Windows.Forms.Button();
+            this.btn_Exit = new System.Windows.Forms.Button();
+            this.btn_Search = new System.Windows.Forms.Button();
+            this.btn_Connect = new System.Windows.Forms.Button();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -210,16 +210,29 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(578, 210);
             this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
-            this.dataGridView1.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentDoubleClick);
             this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
+            // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "ID";
+            this.Column1.Name = "Column1";
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Name";
+            this.Column2.Name = "Column2";
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "Birthday";
+            this.Column3.Name = "Column3";
             // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.label4);
             this.groupBox3.Controls.Add(this.txt_search);
-            this.groupBox3.Controls.Add(this.button8);
-            this.groupBox3.Controls.Add(this.button7);
+            this.groupBox3.Controls.Add(this.btn_cnt_file);
+            this.groupBox3.Controls.Add(this.btn_Exit);
             this.groupBox3.Controls.Add(this.btn_Search);
             this.groupBox3.Controls.Add(this.btn_Connect);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
@@ -230,29 +243,48 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Tools";
             // 
-            // button8
+            // label4
             // 
-            this.button8.BackColor = System.Drawing.Color.White;
-            this.button8.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button8.Location = new System.Drawing.Point(111, 20);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(99, 35);
-            this.button8.TabIndex = 10;
-            this.button8.Text = "Connect .txt";
-            this.button8.UseVisualStyleBackColor = false;
-            this.button8.Click += new System.EventHandler(this.button8_Click);
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(426, 68);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(84, 17);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "(ID or Name)";
             // 
-            // button7
+            // txt_search
             // 
-            this.button7.BackColor = System.Drawing.Color.White;
-            this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button7.Location = new System.Drawing.Point(216, 19);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(99, 35);
-            this.button7.TabIndex = 9;
-            this.button7.Text = "Exit";
-            this.button7.UseVisualStyleBackColor = false;
-            this.button7.Click += new System.EventHandler(this.button7_Click_1);
+            this.txt_search.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txt_search.Location = new System.Drawing.Point(111, 61);
+            this.txt_search.Multiline = true;
+            this.txt_search.Name = "txt_search";
+            this.txt_search.Size = new System.Drawing.Size(309, 33);
+            this.txt_search.TabIndex = 11;
+            // 
+            // btn_cnt_file
+            // 
+            this.btn_cnt_file.BackColor = System.Drawing.Color.White;
+            this.btn_cnt_file.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_cnt_file.Location = new System.Drawing.Point(111, 20);
+            this.btn_cnt_file.Name = "btn_cnt_file";
+            this.btn_cnt_file.Size = new System.Drawing.Size(99, 35);
+            this.btn_cnt_file.TabIndex = 10;
+            this.btn_cnt_file.Text = "Connect .txt";
+            this.btn_cnt_file.UseVisualStyleBackColor = false;
+            this.btn_cnt_file.Click += new System.EventHandler(this.btn_cnt_file_Click);
+            // 
+            // btn_Exit
+            // 
+            this.btn_Exit.BackColor = System.Drawing.Color.White;
+            this.btn_Exit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_Exit.Location = new System.Drawing.Point(216, 20);
+            this.btn_Exit.Name = "btn_Exit";
+            this.btn_Exit.Size = new System.Drawing.Size(99, 35);
+            this.btn_Exit.TabIndex = 9;
+            this.btn_Exit.Text = "Exit";
+            this.btn_Exit.UseVisualStyleBackColor = false;
+            this.btn_Exit.Click += new System.EventHandler(this.btn_Exit_Click);
             // 
             // btn_Search
             // 
@@ -283,40 +315,6 @@
             // 
             this.timer1.Enabled = true;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // txt_search
-            // 
-            this.txt_search.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txt_search.Location = new System.Drawing.Point(111, 61);
-            this.txt_search.Multiline = true;
-            this.txt_search.Name = "txt_search";
-            this.txt_search.Size = new System.Drawing.Size(309, 33);
-            this.txt_search.TabIndex = 11;
-            // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "ID";
-            this.Column1.Name = "Column1";
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "Name";
-            this.Column2.Name = "Column2";
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "Birthday";
-            this.Column3.Name = "Column3";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(426, 68);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(84, 17);
-            this.label4.TabIndex = 12;
-            this.label4.Text = "(ID or Name)";
             // 
             // Form1
             // 
@@ -355,10 +353,10 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button btn_Exit;
         private System.Windows.Forms.Button btn_Search;
         private System.Windows.Forms.Button btn_Connect;
-        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button btn_cnt_file;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.TextBox txt_search;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;

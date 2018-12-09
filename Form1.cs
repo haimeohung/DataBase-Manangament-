@@ -11,47 +11,50 @@ using System.Windows.Forms;
 
 namespace BT6._1
 {
-
     public partial class Form1 : Form
     {
+        //database connection 's information
         static String connString = @"Data Source=VTHCOMPUTER;Initial Catalog=Thongtinsinhvien;Integrated Security=True";
         SqlConnection connection = new SqlConnection(connString);
+        //key of function: index = 0/Save, = 1/Add, = 2/Edit, = 3/Delete
         int index;
+        //type: = 0/connect sql server, = 1/connect a text file in debug directory
+        int type;
+
         public Form1()
         {
             InitializeComponent();
         }
-        private void button7_Click(object sender, EventArgs e)
+        //Exit function
+        private void btn_Exit_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
+        //Create and execute query
         private SqlCommand open()
         {
             String sqlQuery = "select * from [Thongtinsinhvien].[dbo].[SINHVIEN]";
-            //Tao mot Sqlcommand de thuc hien cau lenh truy van da chuan bi voi ket noi hien tai
             SqlCommand command = new SqlCommand(sqlQuery, connection);
-            //Thuc hien cau truy van va nhan ve mot doi tuong reader ho tro do du lieu  
             return command;
         }
-        //Query
+        //
         private void insert()
         {
             String sqlQuery = "insert into [Thongtinsinhvien].[dbo].[SINHVIEN] values (@masv, @hoten, @ngsinh)";
             SqlCommand command = new SqlCommand(sqlQuery, connection);
-            //Thuc hien cau truy van va nhan ve mot doi tuong reader ho tro do du lieu
             command.Parameters.Add("@masv", SqlDbType.Char, 4).Value = txt_masv.Text.ToString();
             command.Parameters.Add("@hoten", SqlDbType.VarChar, 40).Value = txt_ten.Text.ToString();
             command.Parameters.Add("@ngsinh", SqlDbType.SmallDateTime, 4).Value = txt_ngsinh.Text.ToString();
             try
             {
                 command.ExecuteNonQuery();
-
             }
             catch (Exception)
             {
-                MessageBox.Show("Trùng khóa, hãy nhập lại");
+                MessageBox.Show("Key combination!");
             }
         }
+        //
         private void delete()
         {           
             int CurrentIndex = dataGridView1.CurrentRow.Index;
@@ -65,124 +68,191 @@ namespace BT6._1
             }
             catch (Exception)
             {
-                MessageBox.Show("Feo");
+                //MessageBox.Show("Delete record failed!");
             }
         }
+        //
         private void update()
-        {
-         
+        {       
             int CurrentIndex = dataGridView1.CurrentRow.Index;
             string id = dataGridView1.Rows[CurrentIndex].Cells[0].Value.ToString();
-            String sqlQuery = "update [Thongtinsinhvien].[dbo].[SINHVIEN] set HOTEN = '" + txt_ten.Text + "', NGSINH = '"
-                + txt_ngsinh.Text + "' where MASV = '" + id + "'";
+            String sqlQuery = "update [Thongtinsinhvien].[dbo].[SINHVIEN] set HOTEN = '" + txt_ten.Text.ToString() + "', NGSINH = '" + txt_ngsinh.Text.ToString() + 
+                "' where MASV = '" + id + "'";
             SqlCommand command = new SqlCommand(sqlQuery, connection);
+            MessageBox.Show(sqlQuery);
             try
             {
                 command.ExecuteNonQuery();
-
             }
             catch (Exception)
             {
-                MessageBox.Show("Update Failed!");
+                MessageBox.Show("Update record failed!");
             }
         }
+        //
         private void Connect()
         {        
             try
             {
-                //Mo ket noi
                 connection.Open();
-                //Chuan bi cau lenh query viet bang SQL               
             }
             catch (InvalidOperationException ex)
             {
-                //xu ly khi ket noi co van de
-                //MessageBox.Show("Khong the mo ket noi hoac ket noi da mo truoc do");
+                //MessageBox.Show("Cannot connect to server");
             }
             catch (Exception ex)
             {
-                //xu ly khi ket noi co van de
-                MessageBox.Show("Ket noi xay ra loi hoac doc du lieu bi loi");
+                //MessageBox.Show("Cannot connect to server");
             }
             finally
             {
-                //Dong ket noi sau khi thao tac ket thuc
                 //connection.Close();
-
             }
         }
-        //btn_Connect
+        //Connect database
         private void btn_Connect_Click(object sender, EventArgs e)
         {
-            connection.Close();
-            button8.Enabled = false;                     
-            Connect();
-            SqlCommand command = open(); 
-            SqlDataReader reader = command.ExecuteReader();
-            dataGridView1.Rows.Clear();
-            //Su dung reader de doc tung dong du lieu
-            //va thuc hien thao tac xu ly mong muon voi du lieu doc len
-            while (reader.HasRows)//con dong du lieu thi doc tiep
-            {
-                if (reader.Read() == false) return;//doc ko duoc thi return
-                                                   //xu ly khi da doc du lieu len
-                dataGridView1.Rows.Add(reader.GetString(0), reader.GetString(1), reader.GetDateTime(2));
-            }
-            reader.Close();
-            connection.Close();
+            type = 0;
+            ReadData();
         }
-        //btn
-        private void btn_Save_Click(object sender, EventArgs e)
-        {    
+        //Read database
+        private void ReadData()
+        {
             try
             {
                 Connect();
-                if (index == 1)
-                {
-                    insert();
-                }
-                if (index == 2)
-                {
-                    update();
-                }
-
-                dataGridView1.Rows.Clear();
                 SqlCommand command = open();
                 SqlDataReader reader = command.ExecuteReader();
-                //Su dung reader de doc tung dong du lieu
-                //va thuc hien thao tac xu ly mong muon voi du lieu doc len
-                while (reader.HasRows)//con dong du lieu thi doc tiep
+                dataGridView1.Rows.Clear();
+                //Read line by line
+                while (reader.HasRows)
                 {
-                    if (reader.Read() == false) break;//doc ko duoc thi return
-                                                      //xu ly khi da doc du lieu len
+                    if (reader.Read() == false) return;
                     dataGridView1.Rows.Add(reader.GetString(0), reader.GetString(1), reader.GetDateTime(2));
                 }
+                //command.Cancel();
                 reader.Close();
                 connection.Close();
-                index = 0;
             }
             catch (Exception) { }
+        }
+        //Save function
+        private void btn_Save_Click(object sender, EventArgs e)
+        {    
+            if (type == 0)
+            {
+                try
+                {
+                    Connect();
+                    if (index == 1)
+                    {
+                        insert();
+                    }
+                    if (index == 2)
+                    {
+                        update();
+                    }
+                    connection.Close();
+                    ReadData();
+                    index = 0;
+                }
+                catch (Exception) { }
+            }
+            if (type == 1)
+            {
+                FileStream fs = new FileStream("data.txt", FileMode.Open, FileAccess.Read, FileShare.Write);
+                StreamWriter writer = new StreamWriter("data.txt");
+                if (index == 2)
+                {
+                    int CurrentIndex = dataGridView1.CurrentRow.Index;
+                    string id = dataGridView1.Rows[CurrentIndex].Cells[0].Value.ToString();                  
+                    //Write line by line
+                    for (int i = 0; i < dataGridView1.Rows.Count - 1; i++)
+                    {
+                        if (dataGridView1.Rows[i].Cells[0].Value.ToString() == id)
+                        {
+                            writer.WriteLine(txt_masv.Text.ToString() + "," + txt_ten.Text.ToString() + "," + txt_ngsinh.Text.ToString());
+                        }
+                        else
+                        {
+                            writer.WriteLine(dataGridView1.Rows[i].Cells[0].Value + "," + dataGridView1.Rows[i].Cells[1].Value + "," + dataGridView1.Rows[i].Cells[2].Value);
+                        }
+                    }
+                    
+
+                }
+                if (index == 1)
+                {
+                    for (int i = 0; i < dataGridView1.Rows.Count - 1; i++)
+                    {                     
+                       writer.WriteLine(dataGridView1.Rows[i].Cells[0].Value + "," + dataGridView1.Rows[i].Cells[1].Value + "," + dataGridView1.Rows[i].Cells[2].Value);                   
+                    }
+                    writer.WriteLine(txt_masv.Text.ToString() + "," + txt_ten.Text.ToString() + "," + txt_ngsinh.Text.ToString());
+
+                }
+                writer.Dispose();
+                writer.Close();
+                fs.Close();
+                FileStream fs2 = new FileStream("data.txt", FileMode.Open, FileAccess.Read, FileShare.Read);
+                dataGridView1.Rows.Clear();
+                String value = ".";
+                StreamReader rd = new StreamReader(fs2);
+                while (true)
+                {
+                    //Read line by line
+                    value = rd.ReadLine();
+                    if (String.IsNullOrEmpty(value) == true) break;
+                    String[] col = value.Split(',');
+                    dataGridView1.Rows.Add(col[0], col[1], col[2]);
+                }
+                rd.Close();
+                index = 0;
+            }
         }
        
         private void btn_Delete_Click(object sender, EventArgs e)
         {
-            Connect();
-            index = 3;
-            delete();
-            dataGridView1.Rows.Clear();
-            SqlCommand command = open();
-            SqlDataReader reader = command.ExecuteReader();
-            //Su dung reader de doc tung dong du lieu
-            //va thuc hien thao tac xu ly mong muon voi du lieu doc len
-            while (reader.HasRows)//con dong du lieu thi doc tiep
+            if (type == 0)
             {
-                if (reader.Read() == false) break;//doc ko duoc thi return
-                                                   //xu ly khi da doc du lieu len
-                dataGridView1.Rows.Add(reader.GetString(0), reader.GetString(1), reader.GetDateTime(2));
+                index = 0;
+                Connect();                
+                delete();
+                connection.Close();
+                ReadData();
             }
-            reader.Close();
-            connection.Close();
-            btn_Save.Enabled = false;
+            else
+            {
+                FileStream fs = new FileStream("data.txt", FileMode.Open, FileAccess.Read, FileShare.Write);
+                StreamWriter writer = new StreamWriter("data.txt");
+                int CurrentIndex = dataGridView1.CurrentRow.Index;
+                string id = dataGridView1.Rows[CurrentIndex].Cells[0].Value.ToString();
+                for (int i = 0; i < dataGridView1.Rows.Count - 1; i++)
+                {
+                    if (dataGridView1.Rows[i].Cells[0].Value.ToString() != id)
+                    {
+                        writer.WriteLine(dataGridView1.Rows[i].Cells[0].Value + "," + dataGridView1.Rows[i].Cells[1].Value + "," + dataGridView1.Rows[i].Cells[2].Value);
+
+                    }
+                 
+                }
+                writer.Dispose();
+                writer.Close();
+                fs.Close();
+                FileStream fs2 = new FileStream("data.txt", FileMode.Open, FileAccess.Read, FileShare.Read);
+                dataGridView1.Rows.Clear();
+                String value = ".";
+                StreamReader rd = new StreamReader(fs2);
+                while (true)
+                {
+                    //Read line by line
+                    value = rd.ReadLine();
+                    if (String.IsNullOrEmpty(value) == true) break;
+                    String[] col = value.Split(',');
+                    dataGridView1.Rows.Add(col[0], col[1], col[2]);
+                }
+
+                index = 0;
+            }
 
         }
         private void btn_Add_Click(object sender, EventArgs e)
@@ -195,28 +265,6 @@ namespace BT6._1
         private void btn_Update_Click(object sender, EventArgs e)
         {
             index = 2;
-        }
-
-        private void button8_Click(object sender, EventArgs e)
-        {
-
-            btn_Connect.Enabled = false;
-            String value = ".";
-            FileStream fs = new FileStream("data.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            StreamReader rd = new StreamReader(fs);
-            value = rd.ReadLine();
-            String[] col = value.Split(',');
-
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void dataGridView1_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-           
         }
 
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)
@@ -295,35 +343,79 @@ namespace BT6._1
 
         private void btn_Search_Click(object sender, EventArgs e)
         {
-            btn_Connect.PerformClick();
-            String searchvalue = txt_search.Text.ToString();
-            int []index = new int[50];
-            string[] id = new string[50];
-            string[] name = new string[50];
-            string[] day = new string[50];
-            int i = 0;
-            foreach (DataGridViewRow row in dataGridView1.Rows)
+            if (type == 0)
             {
-                try
+                btn_Connect.PerformClick();
+                String searchvalue = txt_search.Text.ToString();
+                int[] index = new int[50];
+                string[] id = new string[50];
+                string[] name = new string[50];
+                string[] day = new string[50];
+                int i = 0;
+                foreach (DataGridViewRow row in dataGridView1.Rows)
                 {
-                    if (row.Cells[1].Value.ToString().Equals(searchvalue) || row.Cells[0].Value.ToString().Equals(searchvalue))
+                    try
                     {
-                        id[i] = dataGridView1.Rows[row.Index].Cells[0].Value.ToString();
-                        name[i] = dataGridView1.Rows[row.Index].Cells[1].Value.ToString();
-                        day[i] = dataGridView1.Rows[row.Index].Cells[2].Value.ToString();
-                        i++;
+                        if (row.Cells[1].Value.ToString().Equals(searchvalue) || row.Cells[0].Value.ToString().Equals(searchvalue))
+                        {
+                            id[i] = dataGridView1.Rows[row.Index].Cells[0].Value.ToString();
+                            name[i] = dataGridView1.Rows[row.Index].Cells[1].Value.ToString();
+                            day[i] = dataGridView1.Rows[row.Index].Cells[2].Value.ToString();
+                            i++;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+
+                }
+                dataGridView1.Rows.Clear();
+                for (int j = 0; j < i; j++)
+                {
+                    dataGridView1.Rows.Add(id[j], name[j], day[j]);
+                }
+                connection.Close();
+            }
+            else
+            {
+                dataGridView1.Rows.Clear();
+                String value = ".";
+                FileStream fs = new FileStream("data.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                StreamReader rd = new StreamReader(fs);
+                while (true)
+                {
+                    //Read line by line
+                    value = rd.ReadLine();
+                    if (String.IsNullOrEmpty(value) == true) break;
+                    String[] col = value.Split(',');
+                    if (col[0] == txt_search.Text.ToString() || col[1] == txt_search.Text.ToString())
+                    {
+                        dataGridView1.Rows.Add(col[0], col[1], col[2]);
+
                     }
                 }
-                catch (Exception) {
-                }
-               
+                rd.Close();
             }
-            dataGridView1.Rows.Clear();
-            for (int j = 0; j < i; j ++)
-            {
-                dataGridView1.Rows.Add(id[j], name[j], day[j]);
-            }
-            connection.Close();
         }
+
+        private void btn_cnt_file_Click(object sender, EventArgs e)
+        {
+            type = 1;
+            dataGridView1.Rows.Clear();
+            String value = ".";
+            FileStream fs = new FileStream("data.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            StreamReader rd = new StreamReader(fs);
+            while (true)
+            {
+                //Read line by line
+                value = rd.ReadLine();
+                if (String.IsNullOrEmpty(value) == true) break;
+                String[] col = value.Split(',');
+                dataGridView1.Rows.Add(col[0], col[1], col[2]);
+            }
+            rd.Close();
+        }
+
+      
     }
 }
